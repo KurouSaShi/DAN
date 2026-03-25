@@ -73,10 +73,13 @@ async function gasGet(params) {
 }
 
 async function gasPost(body) {
+  // GAS WebアプリはCORSリダイレクトを行うため redirect:"follow" が必要
+  // Content-Typeをtext/plainにしてpreflight(OPTIONS)を回避する
   const res = await fetch(GAS_URL, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "text/plain" },
     body: JSON.stringify(body),
+    redirect: "follow",
   });
   return res.json();
 }
@@ -574,32 +577,22 @@ function initRegisterForm() {
       </div>
       <div class="form-group">
         <label class="form-label">曲名 <span class="required">*</span></label>
-        <input type="text" class="text-input song-name" placeholder="曲名を入力..." required>
+        <input type="text" class="text-input song-name" placeholder="曲名を入力...">
       </div>
-      <div class="song-fields">
+      <div class="form-row-2">
         <div class="form-group" style="margin:0">
-          <label class="form-label">難易度</label>
-          <select class="select-input song-diff">
-            <option value="">選択なし</option>
-            <option value="BASIC">BASIC</option>
-            <option value="ADVANCED">ADVANCED</option>
-            <option value="EXPERT">EXPERT</option>
-            <option value="MASTER">MASTER</option>
-            <option value="ULTIMA">ULTIMA</option>
-            <option value="WORLD'S END">WORLD'S END</option>
-            <option value="カスタム">カスタム</option>
-          </select>
+          <label class="form-label">難易度（任意）</label>
+          <input type="text" class="text-input song-diff" placeholder="例: MASTER、EXPERT">
         </div>
         <div class="form-group" style="margin:0">
-          <label class="form-label">レベル</label>
-          <input type="text" class="text-input song-level" placeholder="例: 13+" style="width:90px">
+          <label class="form-label">レベル（任意）</label>
+          <input type="text" class="text-input song-level" placeholder="例: 13+">
         </div>
       </div>
     `;
     entry.querySelector(".remove-song")?.addEventListener("click", () => {
       entry.remove();
       songCount--;
-      // 番号振り直し
       document.querySelectorAll(".song-entry").forEach((e, i) => {
         e.querySelector(".song-entry-num").textContent = `曲 ${i+1}`;
       });
@@ -611,9 +604,14 @@ function initRegisterForm() {
   addSong();
   $("add-song-btn").addEventListener("click", addSong);
 
-  // 機種「その他」カスタム入力
-  $("reg-game").addEventListener("change", () => {
-    $("reg-game-custom").classList.toggle("hidden", $("reg-game").value !== "その他");
+  // ライフ減り方：カスタム選択時に記入欄を表示
+  $("reg-life-decrease").addEventListener("change", () => {
+    $("reg-life-decrease-custom").classList.toggle("hidden", $("reg-life-decrease").value !== "カスタム");
+  });
+
+  // 回復の仕方：カスタム選択時に記入欄を表示
+  $("reg-life-recover").addEventListener("change", () => {
+    $("reg-life-recover-custom").classList.toggle("hidden", $("reg-life-recover").value !== "カスタム");
   });
 
   // プレビュー
@@ -658,14 +656,17 @@ function initRegisterForm() {
         $("song-list").innerHTML = "";
         songCount = 0;
         addSong();
-        $("reg-game-custom").classList.add("hidden");
+        // カスタム記入欄を再度隠す
+        $("reg-life-decrease-custom").classList.add("hidden");
+        $("reg-life-recover-custom").classList.add("hidden");
         await loadAll();
         showToast("段位を投稿しました！", "success");
       } else {
         setMsg(msgEl, "エラー: " + r.error, "error");
       }
     } catch(e) {
-      setMsg($("reg-result"), "通信エラーが発生しました", "error");
+      console.error(e);
+      setMsg($("reg-result"), "通信エラー: " + e.message, "error");
     } finally {
       submitBtn.disabled = false; submitBtn.textContent = "🚀 段位を投稿する";
     }
@@ -674,20 +675,30 @@ function initRegisterForm() {
 
 function collectRegisterForm() {
   const name = $("reg-name").value.trim();
-  const gameRaw = $("reg-game").value;
-  const game = gameRaw === "その他" ? $("reg-game-custom").value.trim() : gameRaw;
+  const game = $("reg-game").value.trim();
   const life = $("reg-life").value.trim();
 
   if (!name) { showToast("段位名を入力してください", "error"); return null; }
-  if (!game) { showToast("機種を選択または入力してください", "error"); return null; }
+  if (!game) { showToast("機種を入力してください", "error"); return null; }
   if (!life) { showToast("LIFEを入力してください", "error"); return null; }
+
+  // カスタム値を解決：セレクトで「カスタム」が選ばれていたら記入欄の値を使う
+  const decreaseRaw = $("reg-life-decrease").value;
+  const lifeDecrease = decreaseRaw === "カスタム"
+    ? $("reg-life-decrease-custom").value.trim() || "カスタム"
+    : decreaseRaw;
+
+  const recoverRaw = $("reg-life-recover").value;
+  const lifeRecover = recoverRaw === "カスタム"
+    ? $("reg-life-recover-custom").value.trim() || "カスタム"
+    : recoverRaw;
 
   const songs = [];
   document.querySelectorAll(".song-entry").forEach(e => {
     const n = e.querySelector(".song-name").value.trim();
     if (n) songs.push({
       name:  n,
-      diff:  e.querySelector(".song-diff").value,
+      diff:  e.querySelector(".song-diff").value.trim(),
       level: e.querySelector(".song-level").value.trim(),
     });
   });
@@ -698,8 +709,8 @@ function collectRegisterForm() {
     dateFrom:     $("reg-date-from").value,
     dateTo:       $("reg-date-to").value,
     songs,
-    lifeDecrease: $("reg-life-decrease").value,
-    lifeRecover:  $("reg-life-recover").value,
+    lifeDecrease,
+    lifeRecover,
     condition:    $("reg-condition").value.trim(),
     comment:      $("reg-comment").value.trim(),
     tags:         $("reg-tags").value.trim(),
