@@ -17,7 +17,7 @@ const SHEETS = {
 // リザルト画像アップロード（ImgBB）- オプション
 // https://imgbb.com/ でAPIキーを取得してください（無料）
 // 2週間後の自動削除には ImgBB の expiration 設定を使います
-const IMGBB_API_KEY = "YOUR_IMGBB_API_KEY_HERE"; // ← 取得したAPIキーを入れる（不要なら空欄）
+const IMGBB_API_KEY = "a8f8ff022ebc34d0cacbaa9254fdd4c2"; // ← 取得したAPIキーを入れる（不要なら空欄）
 
 // ============================================================
 // 状態管理
