@@ -6,7 +6,7 @@
 // ============================================================
 // 設定：GAS APIのURLをここに入れてください
 // ============================================================
-const GAS_URL = "YOUR_GAS_WEBAPP_URL_HERE"; // ← デプロイしたGASのWebアプリURLを貼り付ける
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwljVlA1OipITa2uPEGPxWkjBWbwlBVChxjnQvr-Mpgpxn6wRWlKfaXItKQp0cwnvk5/exec"; // ← デプロイしたGASのWebアプリURLを貼り付ける
 
 // スプレッドシートのシート名
 const SHEETS = {
