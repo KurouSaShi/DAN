@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>段位エディター</title>
-<link rel="stylesheet" href="Style.css">
+<link rel="stylesheet" href="style.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap" rel="stylesheet">
@@ -111,19 +111,7 @@
             </div>
             <div class="form-group">
               <label class="form-label">機種 <span class="required">*</span></label>
-              <div class="game-select-wrap">
-                <select id="reg-game" class="select-input" required>
-                  <option value="">選択してください</option>
-                  <option value="チュウニズム">チュウニズム</option>
-                  <option value="maimai">maimai</option>
-                  <option value="オンゲキ">オンゲキ</option>
-                  <option value="SOUND VOLTEX">SOUND VOLTEX</option>
-                  <option value="DANCERUSH">DANCERUSH</option>
-                  <option value="太鼓の達人">太鼓の達人</option>
-                  <option value="その他">その他</option>
-                </select>
-                <input type="text" id="reg-game-custom" class="text-input hidden" placeholder="機種名を入力">
-              </div>
+              <input type="text" id="reg-game" class="text-input" placeholder="例：チュウニズム、maimai、オンゲキ" maxlength="40" required>
             </div>
           </div>
 
@@ -161,25 +149,27 @@
               <input type="number" id="reg-life" class="text-input" placeholder="例：100" min="1" max="9999" required>
             </div>
             <div class="form-group">
-              <label class="form-label">ライフの減り方</label>
+              <label class="form-label">ライフの減り方（任意）</label>
               <select id="reg-life-decrease" class="select-input">
                 <option value="">設定なし</option>
                 <option value="MISS時">MISS時</option>
                 <option value="ATTACK以下">ATTACK以下</option>
                 <option value="JUSTICE以下">JUSTICE以下</option>
-                <option value="カスタム">カスタム</option>
+                <option value="カスタム">カスタム（記入）</option>
               </select>
+              <input type="text" id="reg-life-decrease-custom" class="text-input hidden" placeholder="ライフの減り方を記入..." style="margin-top:6px">
             </div>
             <div class="form-group">
-              <label class="form-label">回復の仕方</label>
+              <label class="form-label">回復の仕方（任意）</label>
               <select id="reg-life-recover" class="select-input">
                 <option value="">設定なし</option>
                 <option value="回復なし">回復なし</option>
                 <option value="JUSTICE以上">JUSTICE以上</option>
                 <option value="ATTACK以上">ATTACK以上</option>
                 <option value="曲間回復">曲間回復</option>
-                <option value="カスタム">カスタム</option>
+                <option value="カスタム">カスタム（記入）</option>
               </select>
+              <input type="text" id="reg-life-recover-custom" class="text-input hidden" placeholder="回復の仕方を記入..." style="margin-top:6px">
             </div>
           </div>
           <div class="form-group">
