@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>段位エディター</title>
+<link rel="stylesheet" href="style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+<!-- ===== スプラッシュ ===== -->
+<div id="splash">
+  <div class="splash-inner">
+    <div class="splash-logo">
+      <span class="logo-deco">◆</span>
+      <span class="logo-title">段位エディター</span>
+      <span class="logo-deco">◆</span>
+    </div>
+    <div class="splash-sub">ORIGINAL DAN-I EDITOR</div>
+    <div class="splash-loading">
+      <div class="loading-bar"><div class="loading-fill"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ログイン画面 ===== -->
+<div id="login-screen" class="screen hidden">
+  <div class="login-bg">
+    <div class="login-card">
+      <div class="login-header">
+        <div class="login-logo">◆ 段位エディター ◆</div>
+        <div class="login-sub">ORIGINAL DAN-I EDITOR</div>
+      </div>
+      <div class="login-form">
+        <label class="form-label">ユーザー名</label>
+        <input type="text" id="login-username" class="text-input" placeholder="ユーザー名を入力..." maxlength="20">
+        <div class="login-hint">※ユーザー名がそのままあなたのIDになります</div>
+        <button id="login-btn" class="btn btn-primary btn-large">ログイン / 新規登録</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== メインアプリ ===== -->
+<div id="app" class="hidden">
+
+  <!-- ナビゲーション -->
+  <nav class="nav">
+    <div class="nav-logo">◆ 段位エディター</div>
+    <div class="nav-tabs">
+      <button class="nav-tab active" data-page="challenge">🏆 段位挑戦</button>
+      <button class="nav-tab" data-page="register">✏️ 段位登録</button>
+      <button class="nav-tab" data-page="mypage">👤 マイページ</button>
+    </div>
+    <div class="nav-user">
+      <span class="nav-username" id="nav-username-display"></span>
+      <button class="btn btn-sm btn-ghost" id="logout-btn">ログアウト</button>
+    </div>
+  </nav>
+
+  <!-- ===== 段位挑戦ページ ===== -->
+  <div id="page-challenge" class="page active">
+    <div class="page-header">
+      <h1 class="page-title">🏆 段位挑戦</h1>
+      <p class="page-desc">最大3つまで段位に挑戦できます</p>
+    </div>
+
+    <!-- フィルター -->
+    <div class="filter-bar">
+      <select id="filter-game" class="select-input">
+        <option value="">すべての機種</option>
+      </select>
+      <select id="filter-tag" class="select-input">
+        <option value="">すべてのタグ</option>
+      </select>
+      <input type="text" id="filter-search" class="text-input" placeholder="🔍 キーワード検索...">
+      <button id="filter-reset" class="btn btn-ghost btn-sm">リセット</button>
+    </div>
+
+    <!-- 挑戦中バナー -->
+    <div id="challenge-active-banner" class="challenge-banner hidden">
+      <span class="banner-label">📌 現在挑戦中：</span>
+      <span id="challenge-active-list"></span>
+    </div>
+
+    <!-- 段位カードグリッド -->
+    <div id="dani-grid" class="dani-grid">
+      <div class="loading-state">読み込み中...</div>
+    </div>
+  </div>
+
+  <!-- ===== 段位登録ページ ===== -->
+  <div id="page-register" class="page hidden">
+    <div class="page-header">
+      <h1 class="page-title">✏️ 段位登録</h1>
+      <p class="page-desc">オリジナル段位を作成しよう</p>
+    </div>
+
+    <div class="register-form-wrap">
+      <form id="register-form" class="register-form">
+
+        <!-- 基本情報 -->
+        <div class="form-section">
+          <div class="form-section-title">基本情報</div>
+          <div class="form-row-2">
+            <div class="form-group">
+              <label class="form-label">段位名 <span class="required">*</span></label>
+              <input type="text" id="reg-name" class="text-input" placeholder="例：超絶天上段" maxlength="30" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">機種 <span class="required">*</span></label>
+              <div class="game-select-wrap">
+                <select id="reg-game" class="select-input" required>
+                  <option value="">選択してください</option>
+                  <option value="チュウニズム">チュウニズム</option>
+                  <option value="maimai">maimai</option>
+                  <option value="オンゲキ">オンゲキ</option>
+                  <option value="SOUND VOLTEX">SOUND VOLTEX</option>
+                  <option value="DANCERUSH">DANCERUSH</option>
+                  <option value="太鼓の達人">太鼓の達人</option>
+                  <option value="その他">その他</option>
+                </select>
+                <input type="text" id="reg-game-custom" class="text-input hidden" placeholder="機種名を入力">
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row-2">
+            <div class="form-group">
+              <label class="form-label">期間（任意）</label>
+              <div class="date-range">
+                <input type="date" id="reg-date-from" class="text-input">
+                <span>〜</span>
+                <input type="date" id="reg-date-to" class="text-input">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">タグ（カンマ区切り）</label>
+              <input type="text" id="reg-tags" class="text-input" placeholder="例：高難易度, 初心者向け, コラボ">
+            </div>
+          </div>
+        </div>
+
+        <!-- 曲設定 -->
+        <div class="form-section">
+          <div class="form-section-title">収録曲（1〜5曲）</div>
+          <div id="song-list">
+            <!-- JS で生成 -->
+          </div>
+          <button type="button" id="add-song-btn" class="btn btn-outline btn-sm">＋ 曲を追加</button>
+        </div>
+
+        <!-- ライフ・条件 -->
+        <div class="form-section">
+          <div class="form-section-title">ライフ設定</div>
+          <div class="form-row-3">
+            <div class="form-group">
+              <label class="form-label">LIFE <span class="required">*</span></label>
+              <input type="number" id="reg-life" class="text-input" placeholder="例：100" min="1" max="9999" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">ライフの減り方</label>
+              <select id="reg-life-decrease" class="select-input">
+                <option value="">設定なし</option>
+                <option value="MISS時">MISS時</option>
+                <option value="ATTACK以下">ATTACK以下</option>
+                <option value="JUSTICE以下">JUSTICE以下</option>
+                <option value="カスタム">カスタム</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">回復の仕方</label>
+              <select id="reg-life-recover" class="select-input">
+                <option value="">設定なし</option>
+                <option value="回復なし">回復なし</option>
+                <option value="JUSTICE以上">JUSTICE以上</option>
+                <option value="ATTACK以上">ATTACK以上</option>
+                <option value="曲間回復">曲間回復</option>
+                <option value="カスタム">カスタム</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">条件・補足（詳細）</label>
+            <textarea id="reg-condition" class="textarea-input" rows="3" placeholder="例：各曲終了後にライフが50以下になったら失格、など自由に記述"></textarea>
+          </div>
+        </div>
+
+        <!-- 一言 -->
+        <div class="form-section">
+          <div class="form-section-title">一言・説明</div>
+          <textarea id="reg-comment" class="textarea-input" rows="4" placeholder="段位の説明や一言コメントを書いてください..."></textarea>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" id="reg-preview-btn" class="btn btn-outline">プレビュー</button>
+          <button type="submit" class="btn btn-primary btn-large">🚀 段位を投稿する</button>
+        </div>
+
+        <div id="reg-result" class="result-msg hidden"></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== マイページ ===== -->
+  <div id="page-mypage" class="page hidden">
+    <div class="page-header">
+      <h1 class="page-title">👤 マイページ</h1>
+      <p class="page-desc" id="mypage-username-display"></p>
+    </div>
+
+    <div class="mypage-grid">
+      <!-- 挑戦中 -->
+      <section class="mypage-section">
+        <div class="section-header">
+          <h2 class="section-title">📌 挑戦中の段位</h2>
+        </div>
+        <div id="my-challenges" class="challenge-list">
+          <div class="empty-state">現在挑戦中の段位はありません</div>
+        </div>
+      </section>
+
+      <!-- 合格済み -->
+      <section class="mypage-section">
+        <div class="section-header">
+          <h2 class="section-title">✅ 合格した段位</h2>
+        </div>
+        <div id="my-passed" class="passed-list">
+          <div class="empty-state">まだ合格した段位はありません</div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+<!-- ===== モーダル: 段位詳細 ===== -->
+<div id="modal-dani" class="modal-overlay hidden">
+  <div class="modal-card">
+    <button class="modal-close" id="modal-close">✕</button>
+    <div id="modal-dani-content"></div>
+  </div>
+</div>
+
+<!-- ===== モーダル: リザルト提出 ===== -->
+<div id="modal-result" class="modal-overlay hidden">
+  <div class="modal-card modal-sm">
+    <button class="modal-close" id="modal-result-close">✕</button>
+    <div class="modal-title">🎯 リザルト提出</div>
+    <div id="modal-result-dani-name" class="modal-sub"></div>
+
+    <div class="form-group">
+      <label class="form-label">スコア（どちらか一方）</label>
+      <div class="form-row-2">
+        <input type="number" id="result-score" class="text-input" placeholder="スコア">
+        <input type="number" id="result-ex" class="text-input" placeholder="Exスコア">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">残りLIFE</label>
+      <input type="number" id="result-life" class="text-input" placeholder="残りライフ">
+    </div>
+    <div class="form-group">
+      <label class="form-label">合否</label>
+      <div class="radio-group">
+        <label class="radio-label"><input type="radio" name="result-pass" value="合格"> 🎉 合格</label>
+        <label class="radio-label"><input type="radio" name="result-pass" value="不合格"> ❌ 不合格</label>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">リザルト画像（任意・2週間で削除）</label>
+      <input type="file" id="result-image" class="file-input" accept="image/*">
+      <div class="file-hint">※画像はImgBBにアップロードされます（2週間で自動削除）</div>
+    </div>
+    <div id="result-submit-msg" class="result-msg hidden"></div>
+    <button id="result-submit-btn" class="btn btn-primary btn-large">提出する</button>
+  </div>
+</div>
+
+<!-- ===== モーダル: プレビュー ===== -->
+<div id="modal-preview" class="modal-overlay hidden">
+  <div class="modal-card">
+    <button class="modal-close" id="modal-preview-close">✕</button>
+    <div class="modal-title">プレビュー</div>
+    <div id="preview-content"></div>
+  </div>
+</div>
+
+<!-- ===== トースト通知 ===== -->
+<div id="toast-container"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
